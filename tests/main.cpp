@@ -11,7 +11,10 @@ int main()
 
 	ciof::print("1. You typed `%1`, type something else", name);
 	ciof::print();
-	ciof::echo("2. You typed `%1`, type something else\nThis text is literaly printed inside the `ciof:echo()` function", name);
+	ciof::echo("2. You typed `%1`, type something else\nThis text is literaly printed inside the `ciof:echo()` function\n", name);
+
+	ciof::echoLog("-> LOG MESSAGE <-\n");
+	ciof::echoError("-> ERROR MESSAGE <-");
 
 	return 0;
 }

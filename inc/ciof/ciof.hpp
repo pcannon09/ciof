@@ -59,12 +59,36 @@ namespace ciof
 	template <typename T, typename ... Args>
 	void print(T _t, Args ... _args);
 
+	template <typename T>
+	void printLog(T _t);
+
+	template <typename T, typename ... Args>
+	void printLog(T _t, Args ... _args);
+
+	template <typename T>
+	void printError(T _t);
+
+	template <typename T, typename ... Args>
+	void printError(T _t, Args ... _args);
+
 	// ECHO
 	template <typename T>
 	void echo(T _t);
 
 	template <typename T, typename ... Args>
 	void echo(T _t, Args ... _args);
+
+    template <typename T>
+    void echoLog(T _t);
+
+    template <typename T, typename ... Args>
+    void echoLog(T _t, Args ... _args);
+
+    template <typename T>
+    void echoError(T _t);
+
+    template <typename T, typename ... Args>
+    void echoError(T _t, Args ... _args);
 
 	// NOTE: INPUT
 	template <typename T>

@@ -153,6 +153,34 @@ namespace ciof
 		std::cout << std::endl;
 	}
 
+	template <typename T>
+	void printLog(T _t)
+	{
+		ciof::impl::__out(OutputType::Log, _t);
+		std::cout << std::endl;
+	}
+
+	template <typename T, typename ... Args>
+	void printLog(T _t, Args ... _args)
+	{
+		ciof::impl::__out(OutputType::Log, _t, _args ...);
+		std::cout << std::endl;
+	}
+
+	template <typename T>
+	void printError(T _t)
+	{
+		ciof::impl::__out(OutputType::Err, _t);
+		std::cout << std::endl;
+	}
+
+	template <typename T, typename ... Args>
+	void printError(T _t, Args ... _args)
+	{
+		ciof::impl::__out(OutputType::Err, _t, _args ...);
+		std::cout << std::endl;
+	}
+
 	// ECHO
     template <typename T>
     void echo(T _t)
@@ -164,6 +192,30 @@ namespace ciof
     void echo(T _t, Args ... _args)
     {
 		ciof::impl::__out(OutputType::Out, _t, _args ...);
+    }
+
+    template <typename T>
+    void echoLog(T _t)
+    {
+		ciof::impl::__out(OutputType::Log, _t);
+    }
+
+    template <typename T, typename ... Args>
+    void echoError(T _t, Args ... _args)
+    {
+		ciof::impl::__out(OutputType::Err, _t, _args ...);
+    }
+
+    template <typename T>
+    void echoError(T _t)
+    {
+		ciof::impl::__out(OutputType::Err, _t);
+    }
+
+    template <typename T, typename ... Args>
+    void echoLog(T _t, Args ... _args)
+    {
+		ciof::impl::__out(OutputType::Log, _t, _args ...);
     }
 
     // NOTE: UTILS
