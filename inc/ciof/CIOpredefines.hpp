@@ -48,6 +48,6 @@
 #elif defined(__FreeBSD__)
 #	define CIOS_OS_FREEBSD
 #else
-#	error "Current platform is not supported"
+#	warning "Current platform might not supported"
 #endif // defined(WIN32) // Platform check
 
