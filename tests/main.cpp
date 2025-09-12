@@ -3,15 +3,15 @@
 int main()
 {
 	ciof::outputConf.spacing = true;
+	ciof::outputConf.ignoreAllFormating = false;
 
-	const char *msg = "user";
-	std::string inputVar;
+	std::string name;
 
-	ciof::echo("Hello world! %2 How are you? %1\n", msg, "friend");
+	ciof::input(">> ", &name);
 
-	ciof::input(&inputVar);
-
-	ciof::print(inputVar);
+	ciof::print("1. You typed `%1`, type something else", name);
+	ciof::print();
+	ciof::echo("2. You typed `%1`, type something else\nThis text is literaly printed inside the `ciof:echo()` function", name);
 
 	return 0;
 }
