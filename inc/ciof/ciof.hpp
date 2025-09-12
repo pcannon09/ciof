@@ -24,6 +24,13 @@ namespace ciof
 		std::string spacingDelimeter = " ";
 	} CIOFOutputConfig;
 
+	enum class OutputType
+	{
+		Out, // std::cout
+		Err, // std::cerr
+		Log, // std::clog
+	};
+
 	extern CIOFOutputConfig outputConf;
 
 	namespace impl
@@ -31,19 +38,21 @@ namespace ciof
     	template <typename T>
     	std::string toString(const T& val);
 
-    	template <typename... Args>
-    	std::string parse(const std::string& fmt, Args&&... args);
+    	template <typename T, typename ... Args>
+    	std::string parse(T _fmt, Args ... _args);
 
     	template <typename T>
-    	void __out(T _t);
+    	void __out(const OutputType &_outType, T _t);
 
-    	template <typename T, typename... Args>
-    	void __out(T _t, Args... _args);
+    	template <typename T, typename ... Args>
+    	void __out(const OutputType &_outType, T _t, Args ... _args);
     }
 
 	// NOTE: OUTPUT
 	
 	// PRINT
+	void print();
+
 	template <typename T>
 	void print(T _t);
 

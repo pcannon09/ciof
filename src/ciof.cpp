@@ -4,10 +4,10 @@
 # 	error "CIOF Is not OK, make sure to not have any errors at compile time"
 #endif // NOT : __CIOF_OK
 
-#include <iostream>
-#include <string>
-
 namespace ciof
 {
 	CIOFOutputConfig outputConf;
+
+	void print()
+	{ std::cout << std::endl; }
 }

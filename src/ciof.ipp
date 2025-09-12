@@ -37,20 +37,22 @@ namespace ciof
         	}
     	}
 
-    	template <typename ... Args>
-    	std::string parse(const std::string& fmt, Args&& ... args)
+    	template <typename T, typename ... Args>
+    	std::string parse(T _fmt, Args ... _args)
     	{
         	std::string totalParsed;
         	std::string paramDigits;
 
-        	auto tup = std::forward_as_tuple(std::forward<Args>(args) ...);
+        	const std::string fmt = impl::toString(_fmt);
+
+        	auto tup = std::forward_as_tuple(std::forward<Args>(_args) ...);
 
         	for (size_t i = 0; i < fmt.size(); ++i)
         	{
             	const char c = fmt[i];
 
 				// Get param number
-            	if (c == '%')
+            	if (c == '%' && !ciof::outputConf.ignoreAllFormating)
             	{
                 	// Escaped with `%%`
                 	if (i + 1 < fmt.size() && fmt[i + 1] == '%')
@@ -75,6 +77,7 @@ namespace ciof
                 	if (!paramDigits.empty())
                 	{
                     	int idx = std::stoi(paramDigits) - 1; // 1-based
+
                     	if (idx >= 0 && idx < (int)sizeof ... (Args))
                     	{
                         	std::apply([&](auto&& ... elems) {
@@ -87,40 +90,51 @@ namespace ciof
                 	i = j - 1; // skip digits
             	}
 
-            	else
-            	{
-                	totalParsed.push_back(c);
-            	}
+            	else totalParsed.push_back(c);
         	}
 
         	return totalParsed;
     	}
 
-    	// Printing wrappers
     	template <typename T>
-    	void __out(T _t)
+    	void __out(const OutputType &_outType, T _t)
     	{
-        	std::cout << _t;
+    		switch (_outType)
+    		{
+				case ciof::OutputType::Err: std::cerr << _t; break;
+				case ciof::OutputType::Log: std::clog << _t; break;
+				case ciof::OutputType::Out: std::cout << _t; break;
+				default: std::cout << _t; break;
+    		}
     	}
 
-    	template <typename T, typename ... Args>
-    	void __out(T _t, Args ... _args)
+    template <typename T, typename ... Args>
+	void __out(const OutputType &_outType, T _t, Args ... _args)
+	{
+    	if (ciof::outputConf.processing)
     	{
-			if (ciof::outputConf.processing)
-			{
-        		std::string parsed = parse(_t, _args ...);
+        	std::string parsed = impl::parse(_t, _args ...);
 
-        		std::cout << parsed;
-        	}
-
-			else
+        	// If parse returned only the original string and there were extra args, concatenate them
+        	if constexpr (sizeof...(Args) > 0)
         	{
-				std::cout << _t;
+            	if (parsed == impl::toString(_t))
+                	(parsed.append(impl::toString(_args)), ...);
+        	}
 
-				ciof::impl::__out(_args ...);
+        	switch (_outType)
+        	{
+            	case ciof::OutputType::Err: std::cerr << parsed; break;
+            	case ciof::OutputType::Log: std::clog << parsed; break;
+            	case ciof::OutputType::Out: std::cout << parsed; break;
+            	default: std::cout << parsed; break;
         	}
     	}
+ 		
+ 		// Do not throw away args
+    	else (ciof::impl::__out(_outType, _t), ..., ciof::impl::__out(_outType, _args));
 	}
+}
 
 	// NOTE: OUTPUT
 	
@@ -128,14 +142,14 @@ namespace ciof
 	template <typename T>
 	void print(T _t)
 	{
-		ciof::impl::__out(_t);
+		ciof::impl::__out(OutputType::Out, _t);
 		std::cout << std::endl;
 	}
 
 	template <typename T, typename ... Args>
 	void print(T _t, Args ... _args)
 	{
-		ciof::impl::__out(_t, _args ...);
+		ciof::impl::__out(OutputType::Out, _t, _args ...);
 		std::cout << std::endl;
 	}
 
@@ -143,13 +157,13 @@ namespace ciof
     template <typename T>
     void echo(T _t)
     {
-		ciof::impl::__out(_t);
+		ciof::impl::__out(OutputType::Out, _t);
     }
 
     template <typename T, typename ... Args>
     void echo(T _t, Args ... _args)
     {
-		ciof::impl::__out(_t, _args ...);
+		ciof::impl::__out(OutputType::Out, _t, _args ...);
     }
 
     // NOTE: UTILS
