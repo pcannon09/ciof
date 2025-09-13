@@ -3,6 +3,8 @@
 # PCANNON RUN.SH v1.0S - FROM PCANNON PROJECT STANDARDS
 # STANDARD: 20250608
 # https://github.com/pcannon09/pcannonProjectStandards
+# NOTES:
+# - Made CIOF Distribution
 
 set -e
 
@@ -25,7 +27,7 @@ elif [[ $1 == "--license" ]]; then
 	echo "$LICENSE_STR"
 
 else
-	./build/bin/$projectName "$@"
+	./build/bin/${projectName}_non_install "$@"
 
 fi
 
