@@ -36,6 +36,7 @@ if [ ! -d "./build" ]; then
 fi
 
 function ninjaComp() {
+#  	Build
 	cmake --build build -j"$cores" -v
 }
 
@@ -80,6 +81,26 @@ elif [ -z "$1" ] || [ "$1" == "m" ]; then
 	else
 		echo -e "$BRIGHT_RED Please have 'ninja' installed $RESET"
 	fi
+
+elif [[ "$1" == "install" ]]; then
+	echo "[ NOTE ] Must preform action as root / admin"
+
+	if [ -z "$2" ]; then
+		echo "[ ERR ] Must specify installation path"
+
+		exit 1
+	fi
+
+	cmakeCommand="cmake -S . -B build -G Ninja -DCMAKE_POLICY_VERSION_MINIMUM=3.5 -DCMAKE_INSTALL_PREFIX=$2 $compilerFlags"
+
+	eval "$cmakeCommand"
+
+	cmake --install build/
+
+elif [[ "$1" == "uninstall" ]]; then
+	echo "[ NOTE ] Must preform action as root / admin"
+
+	cmake --build build/ --target uninstall
 
 elif [ "$1" == "settings" ]; then
 	echo -e "[ * ] Compilation settings"
