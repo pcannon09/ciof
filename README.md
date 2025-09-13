@@ -1,4 +1,4 @@
-# CIOF - Custom Input/Output Framework
+# CIOF - Custom Input Output Format
 
 `CIOF` is a lightweight C++17+ input/output framework designed to simplify formatted printing, logging, and user interaction.
 It provides a set of high-level utilities to handle standard output, error logging, ANSI styling, and user input consistently across platforms**
