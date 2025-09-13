@@ -1,4 +1,6 @@
-#include "../inc/ciof/ciof.hpp"
+// For this test you will need to have CIOF installed on your system
+
+#include <ciof.hpp>
 
 int main()
 {
