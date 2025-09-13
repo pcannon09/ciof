@@ -1,19 +1,23 @@
 # PCANNON CMAKELISTS.TXT v1.1S - FROM PCANNON PROJECT STANDARDS
 # STANDARD: 20250608
 # https://github.com/pcannon09/pcannonProjectStandards
+# NOTE:
+# This CMake file is to be announced as a v1.2S version
 
 cmake_minimum_required(VERSION 3.24)
 
 # Link exec if only changed
 cmake_policy(SET CMP0147 NEW)
 
+include(CMakePackageConfigHelpers)
+
 # Build mode configuration
 option(DEV_MODE "Enable development mode" ON)
 set(BUILD_MODE "Development" CACHE STRING "Build mode")
 
 if(NOT DEV_MODE)
-	set(DEV_MODE   ON)
-    set(BUILD_MODE "Developement")
+    set(DEV_MODE ON)
+    set(BUILD_MODE "Development")
 endif()
 
 if(DEV_MODE)
@@ -34,7 +38,7 @@ set(VERSION "${projectVersion}")
 set(VERSION_STATE "${projectVersionState}")
 set(VERSION_STD "${projectVersionSTD}")
 
-project(${projectName} VERSION ${projectVersion})
+project(${projectName} VERSION ${projectVersion} LANGUAGES CXX)
 
 # Build Configuration
 
@@ -74,7 +78,6 @@ else()
 endif()
 
 # Project Configuration
-
 set(CPP_STD 17)
 set(CMAKE_CXX_STANDARD ${CPP_STD})
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -85,84 +88,111 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_COLOR_DIAGNOSTICS ON)
 
 # Directory Setup
-
 set(SRC_DIR "${CMAKE_SOURCE_DIR}/src")
 set(TESTS_DIR "${CMAKE_SOURCE_DIR}/tests")
 set(INC_DIR "${CMAKE_SOURCE_DIR}/inc/${projectName}")
 
 # Source Files
-
 set(HEADERS
     ${INC_DIR}/CIOFpredefines.hpp
 
     ${INC_DIR}/ciof.hpp
+    ${INC_DIR}/ciof.ipp
 )
+
+set(SOURCE_NON_INSTALL ${TESTS_DIR}/main.cpp)
+set(SOURCE_INSTALLED ${TESTS_DIR}/releaseMain.cpp)
+set(SOURCE_NON_INSTALL_VER_CHECK ${TESTS_DIR}/version.cpp)
 
 set(SOURCES
-    ${TESTS_DIR}/main.cpp
-
     ${SRC_DIR}/ciof.cpp
-    ${SRC_DIR}/ciof.ipp
 )
 
-# Build Target
+# Build Targets
+add_library(${projectName}_static STATIC ${SOURCES} ${HEADERS})
+add_library(${projectName}_shared SHARED ${SOURCES} ${HEADERS})
 
-add_executable(${projectName} ${SOURCES})
+add_executable(${projectName}_non_install ${SOURCE_NON_INSTALL})
+add_executable(${projectName}_installed ${SOURCE_INSTALLED})
+add_executable(${projectName}_version_check ${SOURCE_NON_INSTALL_VER_CHECK})
 
-# Apply compile and link options
-target_compile_options(${projectName} PRIVATE ${PROGRAM_COMPILE_FLAGS})
-target_link_options(${projectName} PRIVATE ${PROGRAM_LINK_FLAGS})
+function(configure_target tgt)
+    target_compile_options(${tgt} PRIVATE ${PROGRAM_COMPILE_FLAGS})
+    target_link_options(${tgt} PRIVATE ${PROGRAM_LINK_FLAGS})
+    target_include_directories(${tgt} PRIVATE ${INC_DIR})
+    target_link_libraries(${tgt} PRIVATE ${projectName}_static)
+endfunction()
 
-# Additional sources
-target_sources(${projectName} PRIVATE 
-)
-
-# Include directories
-target_include_directories(${projectName} PRIVATE
-    ${INC_DIR}
-)
+configure_target(${projectName}_non_install)
+configure_target(${projectName}_installed)
+configure_target(${projectName}_version_check)
 
 # Output directory
-set_target_properties(${projectName} PROPERTIES
+set_target_properties(
+    ${projectName}_non_install
+    ${projectName}_installed
+    ${projectName}_version_check
+    PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin
 )
 
-# # Installation Configuration
-#
-# # Install executable
-# install(TARGETS ${projectName}
-#     RUNTIME DESTINATION bin
-#     COMPONENT Runtime
-# )
-#
-# # Install headers (if building a library)
-# install(FILES ${HEADERS}
-#     DESTINATION include/${projectName}
-#     COMPONENT Development
-# )
-#
-# # Install configuration files
-# install(FILES 
-#     README.md
-#     DESTINATION share/doc/${projectName}
-#     COMPONENT Documentation
-#     OPTIONAL
-# )
-#
-# # Create uninstall target
-# configure_file(
-#     "${CMAKE_CURRENT_SOURCE_DIR}/cmake_uninstall.cmake.in"
-#     "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-#     IMMEDIATE @ONLY
-#     OPTIONAL
-# )
-#
-# add_custom_target(uninstall
-#     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
-# )
+# INSTALL / EXPORT CONFIGURATION
+# Install libraries
+install(TARGETS ${projectName}_static ${projectName}_shared
+    EXPORT ${projectName}Target
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+    INCLUDES DESTINATION include
+)
 
-# Package Configuration
+# Install headers
+install(DIRECTORY ${INC_DIR}/ ${SRC_DIR}/
+    DESTINATION include/${projectName}
+)
 
+install(EXPORT ${projectName}Target
+    FILE ${projectName}Target.cmake
+    NAMESPACE Ciof::
+    DESTINATION lib/cmake/${projectName}
+)
+
+# Export package
+
+# Generate config file
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_package_config.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/${projectName}Config.cmake"
+    INSTALL_DESTINATION lib/cmake/${projectName}
+)
+
+# Install package config files
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/${projectName}Config.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/${projectName}ConfigVersion.cmake"
+    DESTINATION lib/cmake/${projectName}
+)
+
+# UNINSTALL
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    @ONLY
+)
+
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake
+    COMMENT "Uninstalling ${projectName} ${VERSION}-${VERSION_STATE}..."
+)
+
+# Generate a version file
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/${projectName}ConfigVersion.cmake"
+    VERSION ${VERSION}
+    COMPATIBILITY AnyNewerVersion
+)
+
+# PACKAGE CONFIG
 set(CPACK_PACKAGE_NAME ${projectName})
 set(CPACK_PACKAGE_VERSION ${VERSION})
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Generated by pcannon Project Standards")
@@ -172,23 +202,18 @@ set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 
 include(CPack)
 
-# Build Information
-
+# BUILD INFO
 message(STATUS "Project: ${projectName}")
 message(STATUS "Version: ${VERSION}-${VERSION_STATE}")
 message(STATUS "Standard: ${VERSION_STD}")
 message(STATUS "Build Mode: ${BUILD_MODE}")
 message(STATUS "CXX Compiler: ${CMAKE_CXX_COMPILER}")
 message(STATUS "CXX Standard: C++${CPP_STD}")
-# message(STATUS "Install Prefix: ${CMAKE_INSTALL_PREFIX}")
 
-# Usage Instructions
-
+# Usage instructions
 message(STATUS "Usage:")
 message(STATUS "  Development build: cmake -DDEV_MODE=ON ..")
 message(STATUS "  Production build:  cmake -DDEV_MODE=OFF ..")
-# message(STATUS "  Install:           $\{COMMAND} install")
-message(STATUS "  Uninstall:         $\{COMMAND} uninstall")
-message(STATUS "  Package:           $\{COMMAND} package")
-
+message(STATUS "  Install:           ./compile.sh install {PATH}")
+message(STATUS "  Uninstall:         ./compile.sh uninstall")
 
