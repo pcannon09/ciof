@@ -2,7 +2,7 @@
 	"exeName": "ciof",
 	"projectName": "char-input-output-format",
 
-	"version": "0.0.1",
-	"versionState": "dev",
-	"versionSTD": 0
+	"version": "1.0.0",
+	"versionState": "build",
+	"versionSTD": 20250913
 }
