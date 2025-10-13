@@ -18,6 +18,8 @@ int main()
 	ciof::echo("%3%2. You typed `%1`, type something else\nThis text is literaly printed inside the `ciof:echo()` function%2\n",
 			name, ciof::styleReset(), ciof::styleSet(ciof::OutputStyle::Strikethrough) + ciof::styleSet(ciof::OutputStyle::Italic));
 
+	ciof::cursorPos(15, 2);
+
 	ciof::echoLog("-> LOG MESSAGE <-\n");
 	ciof::echoError("-> ERROR MESSAGE <-");
 
