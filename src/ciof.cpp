@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "../inc/ciof/ciof.hpp"
 
 #ifndef __CIOF_OK
@@ -14,6 +16,12 @@ namespace ciof
 
 	void print()
 	{ std::cout << std::endl; }
+
+	std::string getCursorPos(int _row, int _col)
+	{ return std::string("\033[" + std::to_string(_row) + ";" + std::to_string(_col) + "H"); }
+
+	void cursorPos(int _row, int _col)
+	{ std::cout << getCursorPos(_row, _col) << std::flush; }
 
 	void initANSI()
 	{

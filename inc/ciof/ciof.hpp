@@ -267,6 +267,22 @@ namespace ciof
 	 * NOTE: ONLY WORKS IN WINDOWS 10 OR LATER
 	 */
 	void initANSI();
+
+	/**
+	 * @brief Get the set cursor position using _row and _col
+	 * @param _row Row to set (X)
+	 * @param _col Column to set (Y)
+	 * @return std::string Return the string to set the position using ANSI
+	 */
+	std::string getCursorPos(int _row, int _col);
+
+	/**
+	 * @brief Get the set cursor position using _row and _col
+	 * Essentially calls the `getCursorPos()` function and then sets the row and col according to the `getCursorPos()` function
+	 * @param _row Row to set (X)
+	 * @param _col Column to set (Y)
+	 */
+	void cursorPos(int _row, int _col);
 }
 
 #include "ciof.ipp"
