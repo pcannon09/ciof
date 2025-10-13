@@ -14,10 +14,10 @@
 
 // Versioning
 #define CIOF_VERSION_MAJOR            1
-#define CIOF_VERSION_MINOR            0
+#define CIOF_VERSION_MINOR            1
 #define CIOF_VERSION_PATCH            0
 
-#define CIOF_VERSION_STD              20250913
+#define CIOF_VERSION_STD              20251013
 
 // Version states:
 // * dev
