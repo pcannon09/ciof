@@ -2,11 +2,18 @@
 
 #include "CIOFpredefines.hpp"
 
-#if __cplusplus >= CIOF_DEFAULT_CPP_STD
+#if __CIOF_CPLUSPLUS >= CIOF_DEFAULT_CPP_STD
 
 #define __CIOF_OK
 
 #include <string>
+
+// This must be after all 
+#ifdef CIOF_OS_WIN32
+# 	ifdef __out
+# 		undef __out
+# 	endif
+#endif
 
 namespace ciof
 {

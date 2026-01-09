@@ -12,6 +12,12 @@
 // Project setup
 #define CIOF_DEFAULT_CPP_STD			201703L
 
+#if defined(_MSC_VER)
+#   define __CIOF_CPLUSPLUS     _MSVC_LANG
+#else
+#   define __CIOF_CPLUSPLUS     __cplusplus
+#endif
+
 // Versioning
 #define CIOF_VERSION_MAJOR            1
 #define CIOF_VERSION_MINOR            1
@@ -40,7 +46,7 @@
 #endif // !defined(CIOF_DEV)
 
 // OS Checks
-#ifdef WIN32
+#ifdef _WIN32
 #	define CIOF_OS_WIN32
 #   if !defined(WIN32_ANSI_SUPPORT)
 #       define WIN32_ANSI_SUPPORT       1

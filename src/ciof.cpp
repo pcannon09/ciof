@@ -8,6 +8,7 @@
 
 #ifdef CIOF_OS_WIN32
 # 	include <windows.h>
+# 	include <VersionHelpers.h>
 #endif
 
 namespace ciof
@@ -35,9 +36,9 @@ namespace ciof
 
 		GetConsoleMode(hOut, &dwMode);
 
-		dwMode |= ENABLE_VIRTUAL_PROCESSING
+		dwMode |= ENABLE_VIRTUAL_TERMINAL_PROCESSING;
 
-		SetConsoleMode(hOut, dwMode)
+		SetConsoleMode(hOut, dwMode);
 # 	endif
 	}
 	
