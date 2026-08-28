@@ -85,11 +85,11 @@ namespace ciof
         				if (hasClosingPercent)
             				++j; // skip the trailing %
 
-        				if (idx >= 0 && idx < (int)sizeof...(Args))
+        				if (idx >= 0 && static_cast<std::size_t>(idx) < sizeof...(Args))
         				{
             				std::apply([&](auto&& ... elems) {
                 					std::array<std::string, sizeof...(Args)> arr{ toString(elems)... };
-                					totalParsed += arr[idx];
+                					totalParsed += arr[static_cast<std::size_t>(idx)];
             						}, tup);
         				}
 
